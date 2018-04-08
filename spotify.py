@@ -1,27 +1,30 @@
+import functools
+import json
 import pickle
 
 import requests
-from oauthlib.oauth2 import BackendApplicationClient
-from requests_oauthlib import OAuth2Session
 
+from oauth import implicit_flow
+from secret import client_id
 from song import Song
 
 
+@functools.lru_cache(None)
 def authentication():
-    from secret import client_id, client_secret
-    token_saver = lambda t: pickle.dump(obj=t, file="secret.token")
     try:
-        token = pickle.load(file="secret.token")
-    except pickle.PickleError:
-        client = BackendApplicationClient(client_id=client_id)
-        oauth = OAuth2Session(client=client)
-        token = oauth.fetch_token(
-            token_url='https://spotify.com/oauth2/token',
-            client_id=client_id,
-            client_secret=client_secret)
-        token_saver(token)
+        with open("spotify.response", mode="r") as file:
+            response = pickle.load(file)
+    except:
+        response = implicit_flow("https://accounts.spotify.com/authorize", client_id,
+                                 scope=["user-read-currently-playing", "user-read-playback-state"])
+        with open("spotify.response", mode="r") as file:
+            pickle.dump(file=file, obj=response)
+    return response["access_token"]
 
 
 def currently_playing() -> (Song, int):
-    # requests.get("https://accounts.spotify.com/api/token", auth=authentication())
-    return Song(title="Wet Sand", artist="Red Hot Chili Peppers", duration=5000), 3000
+    response = requests.get("https://api.spotify.com/v1/me/player/currently-playing",
+                            params={"access_token": authentication()})
+    response = json.loads(response.content.decode("utf-8"))
+    song = Song(response["item"]["name"], response["item"]["artists"][0]["name"], response["item"]["duration_ms"])
+    return song, response["progress_ms"]

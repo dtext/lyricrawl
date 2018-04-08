@@ -25,9 +25,8 @@ def main():
     except KeyboardInterrupt:
         return 0
     except Exception as e:
-        print("An error occured during execution:")
-        print(str(e))
-        return 1
+        print("\nAn error occured during execution. Exiting now. Error details:\n")
+        raise e
 
 
 def clear_console():
