@@ -17,8 +17,11 @@ def authentication():
     except:
         response = implicit_flow("https://accounts.spotify.com/authorize", client_id,
                                  scope=["user-read-currently-playing", "user-read-playback-state"])
-        with open("spotify.response", mode="r") as file:
-            pickle.dump(file=file, obj=response)
+        try:
+            with open("spotify.response", mode="w") as file:
+                pickle.dump(file=file, obj=response)
+        except:
+            print("Could not save Spotify token. You need to authorize again next time.")
     return response["access_token"]
 
 
