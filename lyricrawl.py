@@ -12,9 +12,15 @@ def main():
             (song, progress_ms) = currently_playing()
 
             if song is not None:
-                # print lyrics
                 clear_console()
-                print(find_lyrics(song))
+                title = "\"{title}\" by {artist}".format(title=song.title, artist=song.artist)
+                #  "Title" by Artist
+                print("  " + title)
+                # *******************
+                print(" *" + "".join("*" for _ in title) + "*\n")
+                # lyrics, indented
+                print("  " + find_lyrics(song).replace("\n", "\n  "))
+
                 wait_time = 1 + (song.duration - progress_ms) // 1000  # remaining time + small buffer
                 wait_time = min(5, wait_time)
             else:
