@@ -26,8 +26,11 @@ def authentication():
 
 
 def currently_playing() -> (Song, int):
-    response = requests.get("https://api.spotify.com/v1/me/player/currently-playing",
-                            params={"access_token": authentication()})
-    response = json.loads(response.content.decode("utf-8"))
-    song = Song(response["item"]["name"], response["item"]["artists"][0]["name"], response["item"]["duration_ms"])
-    return song, response["progress_ms"]
+    try:
+        response = requests.get("https://api.spotify.com/v1/me/player/currently-playing",
+                                params={"access_token": authentication()})
+        response = json.loads(response.content.decode("utf-8"))
+        song = Song(response["item"]["name"], response["item"]["artists"][0]["name"], response["item"]["duration_ms"])
+        return song, response["progress_ms"]
+    except:
+        return None, 0
