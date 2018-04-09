@@ -3,3 +3,9 @@ class Song:
         self.title = title
         self.artist = artist
         self.duration = duration
+
+    def __eq__(self, other):
+        return (self is other or
+                self.title == other.title
+                and self.artist == other.artist
+                and self.duration == other.duration)

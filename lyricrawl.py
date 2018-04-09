@@ -15,9 +15,10 @@ def main():
                 # print lyrics
                 clear_console()
                 print(find_lyrics(song))
-                wait_time = 2 + (song.duration - progress_ms) // 1000  # remaining + 2 second buffer
+                wait_time = 1 + (song.duration - progress_ms) // 1000  # remaining time + small buffer
+                wait_time = min(5, wait_time)
             else:
-                wait_time = 10
+                wait_time = 5
 
             # wait for the specified time, waking up periodically to check for CTRL + C
             for i in range(wait_time):

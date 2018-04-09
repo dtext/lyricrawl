@@ -25,11 +25,19 @@ def authentication():
     return response["access_token"]
 
 
+_last_song = None
+
+
 def currently_playing() -> (Song, int):
+    global _last_song
     try:
         response = requests.get("https://api.spotify.com/v1/me/player/currently-playing",
                                 params={"access_token": authentication()})
         response = json.loads(response.content.decode("utf-8"))
+        spotify_id = response["item"]["id"]
+        if _last_song == spotify_id:
+            return None, 0
+        _last_song = spotify_id
         song = Song(response["item"]["name"], response["item"]["artists"][0]["name"], response["item"]["duration_ms"])
         return song, response["progress_ms"]
     except:
