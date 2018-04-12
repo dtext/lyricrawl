@@ -1,3 +1,4 @@
+from errors import LyricsNotFoundError
 from song import Song
 import requests
 import html.parser
@@ -32,6 +33,8 @@ def find_url(song: Song):
                    })
     finder = LinkFinder()
     finder.feed(response.content.decode("utf-8"))
+    if finder.link is None:
+        raise LyricsNotFoundError
     return finder.link
 
 
@@ -63,7 +66,11 @@ class LyricsFinder(html.parser.HTMLParser):
 
 def find_lyrics(song: Song) -> str:
     response = requests.get(find_url(song)).content.decode("utf-8")
-    response_preprocessed = response.split("<div id=\"lyrics\">")[1].replace("<br>", "\n")
+    # split at start of lyrics
+    response_preprocessed = response.split("<div id=\"lyrics\">")
+    if not len(response_preprocessed) > 1:
+        raise LyricsNotFoundError
+    response_preprocessed = response_preprocessed[1].replace("<br>", "\n")
     finder = LyricsFinder()
     finder.feed(response_preprocessed)
     return finder.lyrics

@@ -1,6 +1,7 @@
 from time import sleep
 import os
 
+from errors import LyricsNotFoundError
 from lyrics import find_lyrics
 from spotify import currently_playing
 
@@ -15,11 +16,13 @@ def main():
                 clear_console()
                 title = "\"{title}\" by {artist}".format(title=song.title, artist=song.artist)
                 #  "Title" by Artist
-                print("  " + title)
-                # *******************
-                print(" *" + "".join("*" for _ in title) + "*\n")
-                # lyrics, indented
-                print("  " + find_lyrics(song).replace("\n", "\n  "))
+                print("\n  " + title)
+                try:
+                    # lyrics, indented
+                    print("  " + find_lyrics(song).replace("\n", "\n  "))
+                    print("\n\n  (Lyrics provided by songtexte.com)")
+                except LyricsNotFoundError:
+                    print("  Sadly, the lyrics for this song cannot be found.")
 
                 wait_time = 1 + (song.duration - progress_ms) // 1000  # remaining time + small buffer
                 wait_time = min(5, wait_time)
