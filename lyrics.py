@@ -26,6 +26,7 @@ class LinkFinder(html.parser.HTMLParser):
 
 
 def find_url(song: Song):
+    song.title = song.title.split(" - ")[0]  # cut off things like " - Remastered" or " - Radio Edit"
     response = requests.get(url="http://www.songtexte.com/search",
                    params={
                        "q": "+".join(song.artist.split(" ") + song.title.split(" ")),
