@@ -1,2 +1,6 @@
-class LyricsNotFoundError(BaseException):
+class LyricsNotFoundError(Exception):
+    pass
+
+
+class SpotifyAPIError(Exception):
     pass
